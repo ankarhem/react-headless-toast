@@ -46,7 +46,7 @@ const createToaster = <DefaultToastProps extends RequiredToastProps>({
     const [state, _] = useActor(toasterService);
 
     if (!state.matches('active')) {
-      return [] as Omit<Toast<any>, 'ref'>[];
+      return [] as Toast<any>[];
     }
 
     const toasts = state.context.toasts;
