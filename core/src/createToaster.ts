@@ -2,11 +2,13 @@ import React from 'react';
 import { ToasterContext } from './toasterContext';
 import {
   createToasterMachine,
+  ProvidedToastProps,
   RequiredToastProps,
   Toast,
 } from './toasterMachine';
-import { ToastContext } from './toastMachine';
+import { ToastContext, ToastState } from './toastMachine';
 import { useActor } from '@xstate/react';
+import { Interpreter } from 'xstate';
 
 export interface CreateToasterProps<
   DefaultToastProps extends RequiredToastProps
@@ -21,11 +23,11 @@ type SendToastProps<
 > =
   | ({
       Component: React.ComponentType<ToastProps>;
-      props: Omit<ToastProps, 'id'>;
+      props: Omit<ToastProps, ProvidedToastProps>;
     } & Partial<Omit<ToastContext, 'id'>>)
   | ({
       Component?: undefined;
-      props: Omit<DefaultToastProps, 'id'>;
+      props: Omit<DefaultToastProps, ProvidedToastProps>;
     } & Partial<Omit<ToastContext, 'id'>>);
 
 const createToaster = <DefaultToastProps extends RequiredToastProps>({
@@ -36,6 +38,21 @@ const createToaster = <DefaultToastProps extends RequiredToastProps>({
     ToastComponent,
     toastOptions,
   });
+
+  const useToast = (toastRef: Interpreter<ToastContext>) => {
+    const [machineState, send] = useActor(toastRef);
+
+    const state: ToastState = machineState.value as any;
+    const remove = () => {
+      send('REMOVE');
+    };
+
+    return {
+      state,
+      remove,
+    };
+  };
+
   const useToasts = () => {
     const toasterService = React.useContext(ToasterContext);
 
@@ -54,7 +71,7 @@ const createToaster = <DefaultToastProps extends RequiredToastProps>({
     return toasts;
   };
 
-  const useToast = () => {
+  const useToaster = () => {
     const toasterService = React.useContext(ToasterContext);
 
     if (!toasterService) {
@@ -91,8 +108,9 @@ const createToaster = <DefaultToastProps extends RequiredToastProps>({
 
   return {
     toasterMachine,
-    useToast,
+    useToaster,
     useToasts,
+    useToast,
   };
 };
 

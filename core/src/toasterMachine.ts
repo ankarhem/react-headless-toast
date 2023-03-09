@@ -5,30 +5,34 @@ import {
   send,
   spawn,
   createMachine,
+  sendTo,
 } from 'xstate';
 import { ToastContext, createToastMachine } from './toastMachine';
 import { v4 as uuid } from 'uuid';
+
+export type RequiredToastProps = {
+  id: string;
+  toastRef: Interpreter<ToastContext>;
+};
+
+export type ProvidedToastProps = keyof RequiredToastProps;
 
 export type Toast<ToastProps extends RequiredToastProps> = {
   id: string;
   ref: Interpreter<ToastContext>;
   Component: React.ComponentType<ToastProps>;
-  props: ToastProps;
+  props: Omit<ToastProps, ProvidedToastProps>;
 };
 
 export interface ToasterContextType {
   toasts: Toast<any>[];
 }
 
-export type RequiredToastProps = {
-  id: string;
-};
-
-export type ToasterEvent<ToastProps> =
+export type ToasterEvent<ToastProps extends RequiredToastProps> =
   | ({
       type: 'TOAST.ADD';
       Component: React.ComponentType<ToastProps>;
-      props: ToastProps;
+      props: Omit<ToastProps, ProvidedToastProps>;
     } & Partial<Omit<ToastContext, 'id'>>)
   | { type: 'TOAST.REMOVED'; id: string }
   | { type: 'TOAST.REMOVE'; id: string }
@@ -36,7 +40,9 @@ export type ToasterEvent<ToastProps> =
 
 export type ToasterState = 'idle' | 'active';
 
-export interface CreateToasterMachineProps<ToastProps> {
+export interface CreateToasterMachineProps<
+  ToastProps extends RequiredToastProps
+> {
   ToastComponent: React.ComponentType<ToastProps>;
   toastOptions?: Partial<Omit<ToastContext, 'id'>>;
 }
@@ -87,8 +93,8 @@ const createToasterMachine = <ToastProps extends RequiredToastProps>({
                 ref,
                 Component: Component || ToastComponent,
                 props: {
+                  id: toastId,
                   ...props,
-                  id: props.id || toastId,
                 },
               },
             ] as any;
@@ -116,14 +122,6 @@ const createToasterMachine = <ToastProps extends RequiredToastProps>({
                 return newToasts;
               },
             }),
-          },
-          'TOAST.REMOVE': {
-            actions: send('REMOVE', {
-              to: (_, event: AnyEventObject) => event.id,
-            }),
-            // actions: (context, event) => {
-            //   sendTo('REMOVE', event);
-            // },
           },
           'TOASTS.CLEAR': {
             actions: (context) => {

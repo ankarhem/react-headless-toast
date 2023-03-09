@@ -1,7 +1,7 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 import { InterpreterFrom } from 'xstate';
-import { useActor, useInterpret } from '@xstate/react';
-import { createToasterMachine } from './toasterMachine';
+import { useInterpret } from '@xstate/react';
+import { createToasterMachine, RequiredToastProps } from './toasterMachine';
 
 export * from './toasterMachine';
 
@@ -11,7 +11,7 @@ export const ToasterContext = createContext<
 
 export interface ToasterProviderProps {
   children?: React.ReactNode;
-  toasterMachine: ReturnType<typeof createToasterMachine>;
+  toasterMachine: ReturnType<typeof createToasterMachine<any>>;
 }
 
 export const ToasterProvider = ({
@@ -21,7 +21,7 @@ export const ToasterProvider = ({
   const toasterService = useInterpret(toasterMachine);
 
   return (
-    <ToasterContext.Provider value={toasterService}>
+    <ToasterContext.Provider value={toasterService as any}>
       {children}
     </ToasterContext.Provider>
   );
