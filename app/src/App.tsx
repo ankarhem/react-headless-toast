@@ -19,7 +19,10 @@ interface ToastProps {
 const Toast = ({ id, title, message, toastRef }: ToastProps) => {
   const [state] = useActor(toastRef!);
 
-  const visible = !state.matches('exiting') && !state.matches('summoned');
+  const visible = state.matches('entering') || state.matches('idle');
+
+  console.log(visible);
+  console.log(state.value);
 
   return (
     <Transition
@@ -116,6 +119,7 @@ const { toasterMachine, useToast, useToasts } = createToaster({
   ToastComponent: Toast,
   toastOptions: {
     autoCloseAfter: 160000,
+    duration: 400,
   },
 });
 

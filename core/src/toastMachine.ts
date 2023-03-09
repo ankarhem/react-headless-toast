@@ -1,12 +1,17 @@
 import { sendParent, createMachine } from 'xstate';
 import { RequiredToastProps } from './toasterMachine';
 
+export type ToastDuration = number | { enter: number; exit: number };
 export interface ToastContext {
   id: string;
   autoCloseAfter: number;
+  duration: ToastDuration;
+  delay: number;
 }
 
-export type ToastEvent = { type: 'REMOVE' } | { type: 'EXITED' };
+export type ToastEvent = { type: 'REMOVE' };
+
+export type States = 'summoned' | 'entering' | 'idle' | 'expiring' | 'exiting';
 
 function timeout(length: number) {
   return new Promise<void>((resolve) => {
@@ -26,7 +31,9 @@ const createToastMachine = <ToasterProps extends RequiredToastProps>() => {
       summoned: {
         invoke: {
           id: 'entering',
-          src: () => timeout(10),
+          src: (context) => {
+            return timeout(context.delay);
+          },
           onDone: {
             target: 'entering',
           },
@@ -37,41 +44,58 @@ const createToastMachine = <ToasterProps extends RequiredToastProps>() => {
       },
       entering: {
         on: {
-          REMOVE: { target: 'exiting' },
+          REMOVE: { target: 'expiring' },
         },
         invoke: {
           id: 'entering',
-          src: (context) => timeout(context.autoCloseAfter),
-          onDone: [
-            {
-              target: 'idle.persisting',
-              cond: (context) => context.autoCloseAfter === 0,
-            },
-            { target: 'idle.expiring' },
-          ],
+          src: (context) => {
+            const duration =
+              typeof context.duration === 'number'
+                ? context.duration
+                : context.duration.enter;
+            return timeout(duration);
+          },
+          onDone: {
+            target: 'idle',
+          },
         },
       },
       idle: {
         on: {
+          REMOVE: { target: 'expiring' },
+        },
+        invoke: {
+          id: 'idling',
+          src: (context) => timeout(context.autoCloseAfter),
+          onDone: {
+            target: 'expiring',
+          },
+        },
+      },
+      expiring: {
+        on: {
           REMOVE: { target: 'exiting' },
         },
-        states: {
-          expiring: {
-            invoke: {
-              id: 'idling',
-              src: (context) => timeout(context.autoCloseAfter),
-              onDone: {
-                target: '#Toast.exiting',
-              },
-            },
+        invoke: {
+          id: 'expiring',
+          src: (context) => {
+            const duration =
+              typeof context.duration === 'number'
+                ? context.duration
+                : context.duration.exit;
+            return timeout(duration);
           },
-          persisting: {},
+          onDone: {
+            target: 'exiting',
+          },
         },
       },
       exiting: {
         invoke: {
           id: 'exiting',
-          src: (context) => timeout(context.autoCloseAfter / 4),
+          src: (context) => {
+            return timeout(10);
+          },
           onDone: {
             actions: [
               sendParent((ctx: ToastContext) => {

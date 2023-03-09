@@ -43,6 +43,8 @@ export interface CreateToasterMachineProps<ToastProps> {
 
 const defaultToastOptions: Omit<ToastContext, 'id'> = {
   autoCloseAfter: 1600,
+  duration: 400,
+  delay: 10,
 };
 
 const createToasterMachine = <ToastProps extends RequiredToastProps>({
@@ -72,6 +74,8 @@ const createToasterMachine = <ToastProps extends RequiredToastProps>({
                 autoCloseAfter ||
                 toastOptions?.autoCloseAfter ||
                 defaultToastOptions.autoCloseAfter,
+              duration: toastOptions?.duration || defaultToastOptions.duration,
+              delay: toastOptions?.delay || defaultToastOptions.delay,
             };
 
             const ref = spawn(toastMachine.withContext(toastContext));
@@ -117,6 +121,9 @@ const createToasterMachine = <ToastProps extends RequiredToastProps>({
             actions: send('REMOVE', {
               to: (_, event: AnyEventObject) => event.id,
             }),
+            // actions: (context, event) => {
+            //   sendTo('REMOVE', event);
+            // },
           },
           'TOASTS.CLEAR': {
             actions: (context) => {
