@@ -19,10 +19,11 @@ interface ToastProps {
 const Toast = ({ id, title, message, toastRef }: ToastProps) => {
   const [state] = useActor(toastRef!);
 
-  const visible = !state.matches('exiting');
+  const visible = !state.matches('exiting') && !state.matches('summoned');
 
   return (
     <Transition
+      key={id}
       show={visible}
       enter="transition-all ease-out duration-300"
       enterFrom="opacity-0 scale-95"
@@ -53,9 +54,15 @@ const ToastContainer = () => {
   const toasts = useToasts();
 
   return (
-    <div className="absolute top-8 right-8 flex flex-col">
+    <div className="absolute top-8 right-8 flex flex-col gap-2">
       {toasts.map((toast, index) => {
-        return <toast.Component {...toast.props} toastRef={toast.ref as any} />;
+        return (
+          <toast.Component
+            key={toast.id}
+            {...toast.props}
+            toastRef={toast.ref as any}
+          />
+        );
       })}
     </div>
   );
@@ -67,7 +74,7 @@ const Child = () => {
   return (
     <div className="grid container mx-auto items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-2">
-        <h1 className="text-5xl text-center">Ankarhem Toasts</h1>
+        <h1 className="text-5xl text-center">Toasts</h1>
         <h3 className="text-xl opacity-50">Burning hot, but good</h3>
       </div>
       <div className="flex flex-col gap-2">
@@ -77,9 +84,9 @@ const Child = () => {
             toast({
               props: {
                 title: 'Slow toast',
-                message: `Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam odio
-                quos laudantium sit et ad nam?`,
+                message: new Date().toLocaleString(),
               },
+              autoCloseAfter: 4000,
             });
           }}
         >
