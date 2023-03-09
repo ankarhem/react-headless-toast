@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:where(:root), #root {
+  display: grid;
+  height: 100%;
+  width: 100%;
+}
