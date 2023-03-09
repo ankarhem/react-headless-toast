@@ -47,8 +47,8 @@ export const ToastContainer = () => {
         return (
           <toast.Component
             key={toast.id}
+            toastRef={toast.ref}
             {...toast.props}
-            toastRef={toast.ref as any}
           />
         );
       })}
