@@ -1,7 +1,6 @@
-import { RequiredToastProps } from '@headless-toast/core';
+import { createToaster, RequiredToastProps } from '@headless-toast/core';
 import { Transition } from '@headlessui/react';
 import { useState } from 'react';
-import { useToast, useToasts } from './main';
 
 export interface ToastProps extends RequiredToastProps {
   title: string;
@@ -56,3 +55,13 @@ export const ToastContainer = () => {
     </div>
   );
 };
+
+export const { toasterMachine, useToaster, useToasts, useToast } =
+  createToaster({
+    ToastComponent: Toast,
+    toastOptions: {
+      autoCloseAfter: 1500,
+      duration: 400,
+      delay: 0,
+    },
+  });

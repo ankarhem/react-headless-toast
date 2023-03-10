@@ -21,6 +21,23 @@ type SendToastProps<
   ToastProps extends RequiredToastProps,
   DefaultToastProps extends RequiredToastProps
 > =
+  | [
+      toastComponentProps: Omit<ToastProps, ProvidedToastProps>,
+      toastOptions: {
+        Component: React.ComponentType<ToastProps>;
+      } & Partial<Omit<ToastContext, 'id'>>
+    ]
+  | [
+      toastComponentProps: Omit<DefaultToastProps, ProvidedToastProps>,
+      toastOptions?: {
+        Component?: undefined;
+      } & Partial<Omit<ToastContext, 'id'>>
+    ];
+
+type SendToastProps2<
+  ToastProps extends RequiredToastProps,
+  DefaultToastProps extends RequiredToastProps
+> =
   | ({
       Component: React.ComponentType<ToastProps>;
       props: Omit<ToastProps, ProvidedToastProps>;
@@ -80,12 +97,11 @@ const createToaster = <DefaultToastProps extends RequiredToastProps>({
 
     const [_, send] = useActor(toasterService);
 
-    const toast = <TProps extends RequiredToastProps>({
-      props,
-      Component,
-      ...optionalToastContext
-    }: // @ts-ignore
-    SendToastProps<TProps, DefaultToastProps>) => {
+    const toast = <TProps extends RequiredToastProps>(
+      ...args: SendToastProps<TProps, DefaultToastProps>
+    ) => {
+      const [props, toastOptions] = args;
+      const { Component, ...optionalToastContext } = toastOptions || {};
       if (!Component) {
         send({
           type: 'TOAST.ADD',
