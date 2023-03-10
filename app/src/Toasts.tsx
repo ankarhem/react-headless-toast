@@ -1,5 +1,6 @@
 import { RequiredToastProps } from '@headless-toast/core';
 import { Transition } from '@headlessui/react';
+import { useState } from 'react';
 import { useToast, useToasts } from './main';
 
 export interface ToastProps extends RequiredToastProps {
@@ -42,7 +43,7 @@ export const ToastContainer = () => {
   const toasts = useToasts();
 
   return (
-    <div className="absolute top-8 right-8 flex flex-col gap-2">
+    <div className="absolute top-8 right-8 flex flex-col gap-2 items-end">
       {toasts.map((toast) => {
         return (
           <toast.Component

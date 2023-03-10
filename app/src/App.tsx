@@ -14,29 +14,28 @@ function App() {
           onClick={() => {
             toast({
               props: {
-                title: 'Slow toast',
+                title: 'Slow default toast',
                 message: new Date().toLocaleString(),
               },
               autoCloseAfter: 4000,
             });
           }}
         >
-          Send slow notification
+          Send slow default toast
         </button>
         <button
           className="px-4 py-2 bg-blue-300 text-blue-800 rounded"
           onClick={() => {
             toast({
               props: {
-                title: 'Fast toast',
-                message: `Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ullam odio
-                quos laudantium sit et ad nam?`,
+                title: 'Fast default toast',
+                message: 'Fast toast with custom component',
               },
               autoCloseAfter: 1500,
             });
           }}
         >
-          Send fast notification
+          Send fast custom toast
         </button>
       </div>
     </div>

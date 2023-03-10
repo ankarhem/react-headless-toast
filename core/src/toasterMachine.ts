@@ -50,7 +50,7 @@ export interface CreateToasterMachineProps<
 const defaultToastOptions: Omit<ToastContext, 'id'> = {
   autoCloseAfter: 1600,
   duration: 400,
-  delay: 10,
+  delay: 0,
 };
 
 const createToasterMachine = <ToastProps extends RequiredToastProps>({
