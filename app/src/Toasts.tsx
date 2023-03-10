@@ -8,11 +8,12 @@ export interface ToastProps extends RequiredToastProps {
 }
 
 export const Toast = ({ toastRef, title, message }: ToastProps) => {
-  const { state, remove } = useToast(toastRef);
+  const { state, remove, pause, resume } = useToast(toastRef);
 
+  console.log(state.value);
   return (
     <Transition
-      show={state === 'entering' || state === 'idle'}
+      show={state.matches('entering') || state.matches('idle')}
       enter="transition-all ease-out duration-300"
       enterFrom="opacity-0 scale-95"
       enterTo="opacity-100 scale-100"
@@ -22,6 +23,8 @@ export const Toast = ({ toastRef, title, message }: ToastProps) => {
     >
       <div
         className={`w-80 rounded px-4 py-1 flex flex-col gap-2 border-2 bg-red-400 border-red-900 text-red-900`}
+        onMouseEnter={pause}
+        onMouseLeave={resume}
       >
         <div className="flex items-center w-full justify-between">
           <h2 className="font-semibold capitalize">ℹ️ {title}</h2>

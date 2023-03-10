@@ -9,7 +9,10 @@ export interface ToastContext {
   delay: number;
 }
 
-export type ToastEvent = { type: 'REMOVE' };
+export type ToastEvent =
+  | { type: 'REMOVE' }
+  | { type: 'PAUSE' }
+  | { type: 'RESUME' };
 
 export type ToastState = 'summoned' | 'entering' | 'idle' | 'exiting';
 
@@ -22,77 +25,97 @@ function timeout(length: number) {
 }
 
 const createToastMachine = <ToasterProps extends RequiredToastProps>() => {
-  return createMachine<ToastContext, ToastEvent>({
-    predictableActionArguments: true,
-    preserveActionOrder: true,
-    initial: 'summoned',
-    id: 'Toast',
-    states: {
-      summoned: {
-        invoke: {
-          id: 'entering',
-          src: (context) => {
-            return timeout(context.delay);
-          },
-          onDone: {
-            target: 'entering',
-          },
-        },
-        on: {
-          REMOVE: { target: 'exiting' },
-        },
+  return createMachine(
+    {
+      tsTypes: {} as import('./toastMachine.typegen').Typegen0,
+      schema: {
+        events: {} as ToastEvent,
+        context: {} as ToastContext,
       },
-      entering: {
-        on: {
-          REMOVE: { target: 'exiting' },
-        },
-        invoke: {
-          id: 'entering',
-          src: (context) => {
-            const duration =
-              typeof context.duration === 'number'
-                ? context.duration
-                : context.duration.enter;
-            return timeout(duration);
+      predictableActionArguments: true,
+      preserveActionOrder: true,
+      initial: 'summoned',
+      id: 'Toast',
+      states: {
+        summoned: {
+          invoke: {
+            id: 'entering',
+            src: 'entering',
+            onDone: {
+              target: 'idle',
+            },
           },
-          onDone: {
-            target: 'idle',
-          },
-        },
-      },
-      idle: {
-        on: {
-          REMOVE: { target: 'exiting' },
-        },
-        invoke: {
-          id: 'idling',
-          src: (context) => timeout(context.autoCloseAfter),
-          onDone: {
-            target: 'exiting',
+          on: {
+            REMOVE: { target: 'exiting' },
           },
         },
-      },
-      exiting: {
-        invoke: {
-          id: 'exiting',
-          src: (context) => {
-            const duration =
-              typeof context.duration === 'number'
-                ? context.duration
-                : context.duration.exit;
-            return timeout(duration);
+        entering: {
+          on: {
+            REMOVE: { target: 'exiting' },
           },
-          onDone: {
-            actions: [
-              sendParent((ctx: ToastContext) => {
-                return { type: 'TOAST.REMOVED', id: ctx.id };
-              }),
-            ],
+          invoke: {
+            id: 'entering',
+            src: 'entering',
+            onDone: {
+              target: 'idle',
+            },
+          },
+        },
+        idle: {
+          initial: 'active',
+          on: {
+            REMOVE: { target: 'exiting' },
+          },
+          states: {
+            paused: {
+              on: {
+                RESUME: { target: 'active' },
+              },
+            },
+            active: {
+              on: {
+                PAUSE: { target: 'paused' },
+              },
+              invoke: {
+                id: 'idling',
+                src: 'idling',
+                onDone: {
+                  target: '#Toast.exiting',
+                },
+              },
+            },
+          },
+        },
+        exiting: {
+          invoke: {
+            id: 'exiting',
+            src: 'exiting',
+            onDone: {
+              actions: 'toastRemoved',
+            },
           },
         },
       },
     },
-  });
+    {
+      services: {
+        entering: (ctx) => {
+          return timeout(ctx.delay);
+        },
+        idling: (ctx) => timeout(ctx.autoCloseAfter),
+        exiting: (ctx) => {
+          const duration =
+            typeof ctx.duration === 'number' ? ctx.duration : ctx.duration.exit;
+          return timeout(duration);
+        },
+      },
+      actions: {
+        toastRemoved: sendParent((ctx: ToastContext) => {
+          return { type: 'TOAST.REMOVED', id: ctx.id };
+        }),
+      },
+    }
+  );
 };
 
 export { createToastMachine };

@@ -5,6 +5,15 @@ interface CustomToastProps extends RequiredToastProps {
   message: string;
 }
 
+const CustomToast = ({ message }: CustomToastProps) => {
+  return (
+    <div className="text-center rounded-full w-60 bg-indigo-400 text-indigo-800 border-2 border-indigo-800 px-4 py-1">
+      <h1 className="text-2xl font-semibold">One-off toast</h1>
+      <p>{message}</p>
+    </div>
+  );
+};
+
 function App() {
   const toast = useToaster();
   return (
@@ -22,31 +31,29 @@ function App() {
                 message: new Date().toLocaleString(),
               },
               {
-                Component: ({ message }: CustomToastProps) => {
-                  return (
-                    <div className="text-center rounded-full w-60 bg-indigo-400 text-indigo-800 border-2 border-indigo-800 px-4 py-1">
-                      <h1 className="text-2xl font-semibold">One-off toast</h1>
-                      <p>{message}</p>
-                    </div>
-                  );
-                },
-                autoCloseAfter: 5000,
+                Component: CustomToast,
+                autoCloseAfter: 500,
               }
             );
           }}
         >
-          Send slow default toast
+          One-off toast
         </button>
         <button
           className="px-4 py-2 bg-blue-300 text-blue-800 rounded"
           onClick={() => {
-            toast({
-              title: 'Fast default toast',
-              message: 'Fast toast with custom component',
-            });
+            toast(
+              {
+                title: 'Fast default toast',
+                message: 'Fast toast with custom component',
+              },
+              {
+                autoCloseAfter: 1500,
+              }
+            );
           }}
         >
-          Send fast custom toast
+          Default toast
         </button>
       </div>
     </div>

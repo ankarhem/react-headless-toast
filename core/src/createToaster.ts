@@ -6,9 +6,9 @@ import {
   RequiredToastProps,
   Toast,
 } from './toasterMachine';
-import { ToastContext, ToastState } from './toastMachine';
+import { createToastMachine, ToastContext, ToastState } from './toastMachine';
 import { useActor } from '@xstate/react';
-import { Interpreter } from 'xstate';
+import { ActorRefFrom, Interpreter } from 'xstate';
 
 export interface CreateToasterProps<
   DefaultToastProps extends RequiredToastProps
@@ -56,17 +56,29 @@ const createToaster = <DefaultToastProps extends RequiredToastProps>({
     toastOptions,
   });
 
-  const useToast = (toastRef: Interpreter<ToastContext>) => {
+  const useToast = (
+    toastRef: ActorRefFrom<ReturnType<typeof createToastMachine>>
+  ) => {
     const [machineState, send] = useActor(toastRef);
 
-    const state: ToastState = machineState.value as any;
     const remove = () => {
       send('REMOVE');
     };
 
+    const pause = () => {
+      send('PAUSE');
+    };
+
+    const resume = () => {
+      send('RESUME');
+    };
+
     return {
-      state,
+      state: machineState,
       remove,
+      pause,
+      resume,
+      ...machineState.context,
     };
   };
 
