@@ -1,18 +1,4 @@
-import { RequiredToastProps } from '@headless-toast/core';
 import { useToaster } from './Toasts';
-
-interface CustomToastProps extends RequiredToastProps {
-  message: string;
-}
-
-const CustomToast = ({ message }: CustomToastProps) => {
-  return (
-    <div className="text-center rounded-full w-60 bg-indigo-400 text-indigo-800 border-2 border-indigo-800 px-4 py-1">
-      <h1 className="text-2xl font-semibold">One-off toast</h1>
-      <p>{message}</p>
-    </div>
-  );
-};
 
 function App() {
   const toast = useToaster();
@@ -24,36 +10,31 @@ function App() {
       </div>
       <div className="flex flex-col gap-2">
         <button
-          className="px-4 py-2 bg-blue-300 text-blue-800 rounded"
+          className="px-4 py-2 bg-blue-300 text-blue-800 rounded capitalize"
           onClick={() => {
-            toast(
-              {
-                message: new Date().toLocaleString(),
-              },
-              {
-                Component: CustomToast,
-                autoCloseAfter: 500,
-              }
-            );
+            toast({
+              title: 'Fast default toast',
+              message: new Date().toLocaleString(),
+            });
           }}
         >
-          One-off toast
+          Fast default toast
         </button>
         <button
-          className="px-4 py-2 bg-blue-300 text-blue-800 rounded"
+          className="px-4 py-2 bg-blue-300 text-blue-800 rounded capitalize"
           onClick={() => {
             toast(
               {
-                title: 'Fast default toast',
-                message: 'Fast toast with custom component',
+                title: 'Slow default toast',
+                message: 'lorem ipsum dolor sit amet',
               },
               {
-                autoCloseAfter: 1500,
+                autoCloseAfter: 4000,
               }
             );
           }}
         >
-          Default toast
+          Slow Default toast
         </button>
       </div>
     </div>

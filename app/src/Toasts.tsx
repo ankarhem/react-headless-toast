@@ -1,6 +1,5 @@
-import { createToaster, RequiredToastProps } from '@headless-toast/core';
+import { createToaster, RequiredToastProps } from '@headless-toast/react';
 import { Transition } from '@headlessui/react';
-import { useState } from 'react';
 
 export interface ToastProps extends RequiredToastProps {
   title: string;
@@ -10,7 +9,6 @@ export interface ToastProps extends RequiredToastProps {
 export const Toast = ({ toastRef, title, message }: ToastProps) => {
   const { state, remove, pause, resume } = useToast(toastRef);
 
-  console.log(state.value);
   return (
     <Transition
       show={state.matches('entering') || state.matches('idle')}
@@ -63,7 +61,7 @@ export const { toasterMachine, useToaster, useToasts, useToast } =
   createToaster({
     ToastComponent: Toast,
     toastOptions: {
-      autoCloseAfter: 1500,
+      autoCloseAfter: 500,
       duration: 400,
       delay: 0,
     },

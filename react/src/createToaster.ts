@@ -6,7 +6,7 @@ import {
   RequiredToastProps,
   Toast,
 } from './toasterMachine';
-import { createToastMachine, ToastContext, ToastState } from './toastMachine';
+import { createToastMachine, ToastContext } from './toastMachine';
 import { useActor } from '@xstate/react';
 import { ActorRefFrom, Interpreter } from 'xstate';
 

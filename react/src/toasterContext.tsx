@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { InterpreterFrom } from 'xstate';
 import { useInterpret } from '@xstate/react';
-import { createToasterMachine, RequiredToastProps } from './toasterMachine';
+import { createToasterMachine } from './toasterMachine';
 
 export * from './toasterMachine';
 

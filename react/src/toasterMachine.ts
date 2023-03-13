@@ -1,13 +1,4 @@
-import {
-  AnyEventObject,
-  assign,
-  Interpreter,
-  send,
-  spawn,
-  createMachine,
-  sendTo,
-  ActorRefFrom,
-} from 'xstate';
+import { assign, spawn, createMachine, ActorRefFrom } from 'xstate';
 import { ToastContext, createToastMachine, ToastEvent } from './toastMachine';
 import { v4 as uuid } from 'uuid';
 
