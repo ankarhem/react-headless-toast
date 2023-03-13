@@ -12,7 +12,6 @@ importers:
 
   app:
     specifiers:
-      '@headless-toast/react': workspace:*
       '@headlessui/react': ^1.7.13
       '@types/react': ^18.0.27
       '@types/react-dom': ^18.0.10
@@ -22,16 +21,17 @@ importers:
       postcss: ^8.4.21
       react: ^18.2.0
       react-dom: ^18.2.0
+      react-headless-toast: workspace:*
       tailwindcss: ^3.2.7
       typescript: ^4.9.3
       vite: ^4.1.0
       xstate: ^4.37.0
     dependencies:
-      '@headless-toast/react': link:../react
       '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
       '@xstate/react': 3.2.1_o53l3h553defh3ruq4yellezcm
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-headless-toast: link:../react
       xstate: 4.37.0
     devDependencies:
       '@types/react': 18.0.28

@@ -1,4 +1,4 @@
-import { createToaster, RequiredToastProps } from '@headless-toast/react';
+import { createToaster, RequiredToastProps } from 'react-headless-toast';
 import { Transition } from '@headlessui/react';
 
 export interface ToastProps extends RequiredToastProps {

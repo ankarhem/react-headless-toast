@@ -1,17 +1,17 @@
 {
-  "name": "@headless-toast/react",
+  "name": "react-headless-toast",
   "version": "0.0.0",
   "type": "module",
   "files": [
     "dist",
     "src"
   ],
-  "main": "./dist/bundles/@headless-toast/react.umd.cjs",
-  "module": "./dist/bundles/@headless-toast/react.es.js",
+  "main": "./dist/bundles/react-headless-toast.umd.cjs",
+  "module": "./dist/bundles/react-headless-toast.es.js",
   "exports": {
     ".": {
-      "import": "./dist/bundles/@headless-toast/react.es.js",
-      "require": "./dist/bundles/@headless-toast/react.umd.cjs"
+      "import": "./dist/bundles/react-headless-toast.es.js",
+      "require": "./dist/bundles/react-headless-toast.umd.cjs"
     }
   },
   "types": "./dist/types/index.d.ts",
